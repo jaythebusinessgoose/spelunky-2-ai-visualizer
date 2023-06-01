@@ -8,13 +8,12 @@ return Entity_AI:new({
         { -- Aggro/attack
             shape = geometry.create_box_shape(0, -0.4, 6, 0.4),
             flip_with_ent = true,
-            is_blocked_by_solids = true,
+            line_of_sight_checks = 6,
             is_visible = function(ent)
-                return ent.move_state == 0 or ent.move_state == 1
+                return ent.move_state == 0 or ent.move_state == 1 or ent.move_state == 2 or ent.move_state == 5
             end,
             is_active = function(ent)
-                -- TODO
-                return true
+                return ent.move_state == 0 or ent.move_state == 1 or ent.move_state == 2 or ent.walk_pause_timer == 0
             end,
             -- TODO: Use "Attack" if the tikiman is going to throw a held object.
             label = "Aggro"

@@ -7,7 +7,7 @@ return Entity_AI:new({
         { -- Attack
             shape = geometry.create_box_shape(0, -0.45, 6, 0.45),
             flip_with_ent = true,
-            is_blocked_by_solids = true,
+            line_of_sight_checks = 6,
             is_visible = function(ent)
                 return ent.move_state == 0 or ent.move_state == 1
             end,

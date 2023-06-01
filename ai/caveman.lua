@@ -30,9 +30,9 @@ return Entity_AI:new({
             -- TODO: This is visible for cavemen in the Olmec cutscene, but they can't actually aggro at all. This behavior isn't tied to the praying animation, nor any flags or exposed variables I could find. WalkingMonster.cooldown_timer doesn't decrement at all on the original ones, making me think there is a setting somewhere that turns off the AI entirely. The cutscene doesn't seem to track the 3 original cavemen, and instead triggers animation changes on all cavemen in the level, and kills them all when it ends. Any late spawned cavemen caught up in a cutscene animation change also get their AI disabled. However, before an animation change, the late spawns have normal AI.
             shape = geometry.create_box_shape(0, -0.4, 6, 0.4),
             flip_with_ent = true,
-            is_blocked_by_solids = true,
+            line_of_sight_checks = 6,
             is_visible = function(ent)
-                return (ent.move_state == 0 or ent.move_state == 1) and not ai_common.is_mounted(ent)
+                return (ent.move_state == 0 or ent.move_state == 1 or ent.move_state == 2) and not ai_common.is_mounted(ent)
             end,
             label = "Aggro"
         },

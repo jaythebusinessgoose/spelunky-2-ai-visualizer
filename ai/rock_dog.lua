@@ -13,13 +13,12 @@ return Entity_AI:new({
         { -- Attack
             shape = geometry.create_box_shape(0, -0.4, 6, 0.4),
             flip_with_ent = true,
-            is_blocked_by_solids = true,
+            line_of_sight_checks = 6,
             is_visible = function(ent, ctx)
                 return not ent.tamed or ctx.hostile_rider_ent
             end,
             is_active = function(ent, ctx)
                 -- Rock dogs have a simulated attack input which they press and hold down while a target is in range. The attack only happens once on the first frame that the input is pressed, unless the rock dog has a hostile rider. The rock dog can't attack again until no targets are in range and it releases its attack input for at least one frame.
-                -- TODO: They seem to sometimes release their attack when the target is close to a wall.
                 return ent.attack_cooldown == 0 and (ctx.hostile_rider_ent or not test_flag(ent.buttons, BUTTON.WHIP))
             end,
             label = "Attack"

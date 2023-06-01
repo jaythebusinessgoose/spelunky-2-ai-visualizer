@@ -142,35 +142,6 @@ local entity_ai_ent_type_list
 -- Map of tracked entity IDs and their stored data.
 local tracked_ents
 
--- TODO: I don't think this is exactly how entities do line-of-sight checks. It's mostly accurate, but not perfect along edges, and entities might actually be checking specific points instead of a ray.
--- TODO: For some monsters, this check might also get blocked by non-solid floors, such as ladders.
-local function ray_cast_horizontal(start, end_x, layer)
-    local aabb
-    if start.x < end_x then
-        aabb = AABB:new(start.x, start.y, end_x, start.y)
-    else
-        aabb = AABB:new(end_x, start.y, start.x, start.y)
-    end
-    local blocking_ids = get_entities_overlapping_hitbox(0, MASK.FLOOR | MASK.ACTIVEFLOOR, aabb, layer)
-    local farthest_x = end_x
-    for _, blocking_id in ipairs(blocking_ids) do
-        if test_flag(get_entity(blocking_id).flags, ENT_FLAG.SOLID) then
-            if start.x < end_x then
-                local solid_x = get_hitbox(blocking_id).left
-                if farthest_x > solid_x then
-                    farthest_x = solid_x
-                end
-            else
-                local solid_x = get_hitbox(blocking_id).right
-                if farthest_x < solid_x then
-                    farthest_x = solid_x
-                end
-            end
-        end
-    end
-    return farthest_x
-end
-
 -- Builds precomputed data structures and prepares options for the entity AIs. This needs to be called before trying to process any entities.
 local function init_entity_ai()
     entity_ai_list = {}
@@ -240,6 +211,39 @@ end
 
 local function should_process_entities(screen)
     return screen == SCREEN.CAMP or screen == SCREEN.LEVEL or screen == SCREEN.DEATH
+end
+
+local function is_point_solid(x, y, layer)
+    -- Spelunky's point overlap check includes hitbox edges and corners, but Overlunky's hitbox overlap check does not. To work around this, add some padding to ensure that the Overlunky function returns all potentially overlapping entities. Then do another check on each solid entity to see if any of them actually overlap the point, including edges and corners. Spelunky doesn't seem to have any padding of its own for this check.
+    local ids = get_entities_overlapping_hitbox(0, MASK.FLOOR | MASK.ACTIVEFLOOR,
+        AABB:new(x - 0.0001, y + 0.0001, x + 0.0001, y - 0.0001), layer)
+    for _, id in ipairs(ids) do
+        if test_flag(get_entity(id).flags, ENT_FLAG.SOLID) then
+            local hitbox = get_hitbox(id)
+            if hitbox.left <= x and x <= hitbox.right and hitbox.bottom <= y and y <= hitbox.top then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+local function clip_line_of_sight(process_ctx, shape, line_of_sight_checks)
+    -- Line-of-sight checks only occur in the direction the entity is facing. There are no entities with two-way line-of-sight checks.
+    local facing_mult = process_ctx.is_facing_left and -1 or 1
+    local check_x = 1
+    while check_x <= line_of_sight_checks do
+        if is_point_solid(process_ctx.ent_x + (facing_mult * check_x), process_ctx.ent_y, process_ctx.ent_layer) then
+            break
+        else
+            check_x = check_x + 1
+        end
+    end
+    if process_ctx.is_facing_left then
+        shape:clip_left(process_ctx.ent_x - check_x + 0.5)
+    else
+        shape:clip_right(process_ctx.ent_x + check_x - 0.5)
+    end
 end
 
 local function process_tracked_entity(id)
@@ -366,13 +370,8 @@ local function process_tracked_entity(id)
                     end
                     shape:translate(x, y)
 
-                    if range.flip_with_ent and range.is_blocked_by_solids and shape.bounds then
-                        -- Assume that the ray cast only needs to occur in the direction the entity is facing. There are no entities with two-way line-of-sight checks.
-                        if process_ctx.is_facing_left then
-                            shape:clip_left(ray_cast_horizontal(Vec2:new(ent_x, ent_y), shape.bounds.left, ent_layer))
-                        else
-                            shape:clip_right(ray_cast_horizontal(Vec2:new(ent_x, ent_y), shape.bounds.right, ent_layer))
-                        end
+                    if range.flip_with_ent and range.line_of_sight_checks then
+                        clip_line_of_sight(process_ctx, shape, range.line_of_sight_checks)
                     end
 
                     if range.post_transform_shape then

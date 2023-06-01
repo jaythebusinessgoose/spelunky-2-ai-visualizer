@@ -10,7 +10,7 @@ return {
             { -- Attack
                 shape = geometry.create_box_shape(0, -0.4, 6, 0.4),
                 flip_with_ent = true,
-                is_blocked_by_solids = true,
+                line_of_sight_checks = 6,
                 is_active = function(ent)
                     -- TODO: When can the witch doctor can initiate another attack after just doing one? He can start another attack at some point during the finishing animation from the previous one.
                     return true

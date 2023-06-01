@@ -23,7 +23,7 @@ return Entity_AI:new({
             -- TODO: Becomes a shoot range when crouched, since the mech can't punch in that state.
             shape = geometry.create_box_shape(0, -1, 1.65, 1),
             flip_with_ent = true,
-            is_blocked_by_solids = true, -- TODO: There seems to be a minimum range in which the mech attacks anyways, but solids definitely shorten it.
+            line_of_sight_checks = 2,
             is_visible = function(ent, ctx)
                 return ctx.can_attack
             end,
@@ -36,7 +36,8 @@ return Entity_AI:new({
         { -- Shoot
             shape = geometry.create_box_shape(4, -1, 6, 1),
             flip_with_ent = true,
-            is_blocked_by_solids = true, -- TODO: Label appears even when the entire range is blocked and should not be visible. Is something surviving the clip and giving the shape a zero-area AABB?
+             -- TODO: Label appears even when the entire range is blocked and should not be visible. Is something surviving the clip and giving the shape a zero-area AABB?
+            line_of_sight_checks = 6,
             is_visible = function(ent, ctx)
                 return ctx.can_attack
             end,
