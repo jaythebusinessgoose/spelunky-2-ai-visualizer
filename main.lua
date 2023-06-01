@@ -327,8 +327,10 @@ local function process_tracked_entity(id)
                 if range.type == Entity_AI.RANGE_TYPE.MISC then
                     draw_color = MISC_BOX_COLOR
                 elseif range.type == Entity_AI.RANGE_TYPE.HITBOX_OVERLAP then
+                    -- TODO: Make it more obvious that this is a hitbox overlap check. It's difficult to understand with just a color.
                     draw_color = HITBOX_OVERLAP_COLOR
                 elseif range.type == Entity_AI.RANGE_TYPE.HURTBOX then
+                    -- TODO: Make it more obvious that this is a hitbox overlap check. It's difficult to understand with just a color.
                     draw_color = HURTBOX_COLOR
                 end
 
