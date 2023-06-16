@@ -144,10 +144,11 @@ function module.npc_use_held_item_range_label(ent)
     return "Use held item"
 end
 
+-- Chasers will turn to face their target if the target enters this range while it's active. The range triggers even if they are already facing their target, which appears to do nothing, but still resets the turn timer.
 -- TODO: Show while turning for entities with turn animations. Can't just check for the turning move_state because they also use that state when turning for dialog. How do they keep track of their aggro state while turning?
 function module.create_chaser_turn_range(attack_move_state, turn_timer_field)
     return {
-        shape = geometry.create_donut_shape(3, 4):clip_right(0),
+        shape = geometry.create_donut_shape(3, 4),
         flip_with_ent = true,
         is_visible = function(ent)
             -- TODO: Climbers can have a lot of ranges. Maybe don't show these at all when climbing.
@@ -158,27 +159,8 @@ function module.create_chaser_turn_range(attack_move_state, turn_timer_field)
         is_active = function(ent)
             return ent.standing_on_uid ~= -1 and ent[turn_timer_field] == 0
         end,
-        label = "Turn",
-        label_position = LABEL_POSITION.LEFT
-    }
-end
-
--- TODO: Show while turning for entities with turn animations. Can't just check for the turning move_state because they also use that state when turning for dialog. How do they keep track of their aggro state while turning?
-function module.create_chaser_postpone_turn_range(attack_move_state, turn_timer_field)
-    return {
-        shape = geometry.create_donut_shape(3, 4):clip_left(0),
-        flip_with_ent = true,
-        is_visible = function(ent)
-            -- TODO: Climbers can have a lot of ranges. Maybe don't show these at all when climbing.
-            -- TODO: Climbing irrelevant for enemies that can't do that.
-            return ent.move_state == attack_move_state -- or ent.move_state == MOVE_STATE.CLIMBING
-        end,
-        is_inactive_when_stuck = false,
-        is_active = function(ent)
-            return ent.standing_on_uid ~= -1 and ent[turn_timer_field] == 0
-        end,
-        label = "Postpone turn",
-        label_position = LABEL_POSITION.RIGHT
+        label = "Turn to target",
+        label_position = LABEL_POSITION.TOP
     }
 end
 

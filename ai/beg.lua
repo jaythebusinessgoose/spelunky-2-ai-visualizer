@@ -9,7 +9,6 @@ return Entity_AI:new({
     ent_type = ENT_TYPE.MONS_HUNDUNS_SERVANT,
     ranges = {
         ai_common.create_chaser_turn_range(ai_common.MOVE_STATE.ATTACKING, "target_in_sight_timer"),
-        ai_common.create_chaser_postpone_turn_range(ai_common.MOVE_STATE.ATTACKING, "target_in_sight_timer"),
         ai_common.create_chaser_no_jump_range(ai_common.MOVE_STATE.ATTACKING),
         { -- Dialog
             shape = geometry.create_circle_shape(2),

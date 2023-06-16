@@ -9,7 +9,6 @@ return Entity_AI:new({
     ent_type = ENT_TYPE.MONS_BODYGUARD,
     ranges = {
         ai_common.create_chaser_turn_range(ai_common.MOVE_STATE.ATTACKING, "target_in_sight_timer"),
-        ai_common.create_chaser_postpone_turn_range(ai_common.MOVE_STATE.ATTACKING, "target_in_sight_timer"),
         ai_common.create_chaser_no_jump_range(ai_common.MOVE_STATE.ATTACKING),
         { -- Tusk idol aggro
             -- The bodyguard aggros from seeing the idol, not the player. The idol can be seen even through walls. Tusk does not aggro from seeing the idol.

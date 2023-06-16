@@ -10,7 +10,6 @@ return Entity_AI:new({
     ent_type = ENT_TYPE.MONS_OLD_HUNTER,
     ranges = {
         ai_common.create_chaser_turn_range(ai_common.MOVE_STATE.ATTACKING, "target_in_sight_timer"),
-        ai_common.create_chaser_postpone_turn_range(ai_common.MOVE_STATE.ATTACKING, "target_in_sight_timer"),
         ai_common.create_chaser_no_jump_range(ai_common.MOVE_STATE.ATTACKING),
         { -- Use held item
             shape = geometry.create_box_shape(0, -0.18, 10, 0.18),

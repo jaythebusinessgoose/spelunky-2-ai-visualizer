@@ -13,7 +13,6 @@ local function get_rescue_flag(ent)
 end
 
 local TURN_RANGE = ai_common.create_chaser_turn_range(ai_common.MOVE_STATE.ATTACKING, "target_in_sight_timer")
-local POSTPONE_TURN_RANGE = ai_common.create_chaser_postpone_turn_range(ai_common.MOVE_STATE.ATTACKING, "target_in_sight_timer")
 local NO_JUMP_RANGE = ai_common.create_chaser_no_jump_range(ai_common.MOVE_STATE.ATTACKING)
 
 local DIALOG_JUNGLE_RANGE = {
@@ -76,7 +75,6 @@ return {
         ent_type = ENT_TYPE.MONS_SISTER_PARSLEY,
         ranges = {
             TURN_RANGE,
-            POSTPONE_TURN_RANGE,
             NO_JUMP_RANGE,
             DIALOG_JUNGLE_RANGE,
             DIALOG_OLMEC_RANGE,
@@ -100,7 +98,6 @@ return {
         ent_type = ENT_TYPE.MONS_SISTER_PARSNIP,
         ranges = {
             TURN_RANGE,
-            POSTPONE_TURN_RANGE,
             NO_JUMP_RANGE,
             DIALOG_JUNGLE_RANGE,
             DIALOG_OLMEC_RANGE,
@@ -128,7 +125,6 @@ return {
         ent_type = ENT_TYPE.MONS_SISTER_PARMESAN,
         ranges = {
             TURN_RANGE,
-            POSTPONE_TURN_RANGE,
             NO_JUMP_RANGE,
             DIALOG_JUNGLE_RANGE,
             DIALOG_OLMEC_RANGE,

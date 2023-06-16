@@ -9,7 +9,6 @@ return Entity_AI:new({
     ent_type = ENT_TYPE.MONS_LEPRECHAUN,
     ranges = {
         ai_common.create_chaser_turn_range(2, "target_in_sight_timer"),
-        ai_common.create_chaser_postpone_turn_range(2, "target_in_sight_timer"),
         ai_common.create_chaser_no_jump_range(2),
         { -- Aggro
             shape = geometry.create_circle_shape(8),

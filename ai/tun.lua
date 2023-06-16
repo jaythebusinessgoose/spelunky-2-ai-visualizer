@@ -8,7 +8,6 @@ return Entity_AI:new({
     ent_type = ENT_TYPE.MONS_MERCHANT,
     ranges = {
         ai_common.create_chaser_turn_range(ai_common.MOVE_STATE.ATTACKING, "lose_interest_timer"),
-        ai_common.create_chaser_postpone_turn_range(ai_common.MOVE_STATE.ATTACKING, "lose_interest_timer"),
         ai_common.create_chaser_no_jump_range(ai_common.MOVE_STATE.ATTACKING),
         { -- Dialog (Tiamat)
             shape = geometry.create_box_shape(-3, -1.5, 3, 1.5),
