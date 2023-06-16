@@ -1,3 +1,5 @@
+-- TODO: Finish NPC ranges
+
 local ai_common = require("ai/common")
 
 return Entity_AI:new({
@@ -27,20 +29,15 @@ return Entity_AI:new({
             is_inactive_when_stuck = false,
             label = "Detect bomb"
         },
-        { -- Shoot
+        { -- Use held item
             -- TODO: Check range with other weapons. Seemed like they were all the same for bodyguards.
             -- TODO: Doesn't seem to shoot if face is too close to a wall. Also doesn't shoot if facing into a ladder. Is it just a check for FLOOR entities? Is he checking a single point in front of himself?
             shape = geometry.create_donut_shape(2, 12):clip_box(0, nil, 5, nil),
             flip_with_ent = true,
-            is_visible = function(ent)
-                -- TODO: Shopkeepers have a lot of ranges. Maybe don't show these at all when climbing.
-                return ent.move_state == ai_common.MOVE_STATE.ATTACKING or ent.move_state == ai_common.MOVE_STATE.CLIMBING
-            end,
+            is_visible = ai_common.npc_use_held_item_range_visible,
             is_inactive_when_stuck = false,
-            is_active = function(ent)
-                return ent.move_state == ai_common.MOVE_STATE.ATTACKING and ai_common.can_shoot_held_weapon(ent)
-            end,
-            label = "Shoot",
+            is_active = ai_common.npc_use_held_item_range_active,
+            label = ai_common.npc_use_held_item_range_label,
             label_position = LABEL_POSITION.RIGHT
         },
         { -- No climb

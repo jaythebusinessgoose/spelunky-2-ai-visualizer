@@ -1,4 +1,4 @@
--- TODO: NPC AI stuff (climbing, attacking)
+-- TODO: Finish NPC ranges
 
 local ai_common = require("ai/common")
 
@@ -53,6 +53,17 @@ local DETECT_BOMB_RANGE = {
     label_position = LABEL_POSITION.TOP
 }
 
+local USE_HELD_ITEM_RANGE = {
+    shape = geometry.create_box_shape(0, -0.18, 10, 0.18),
+    flip_with_ent = true,
+    line_of_sight_checks = 10,
+    line_of_sight_extra_length = 2,
+    is_visible = ai_common.npc_use_held_item_range_visible,
+    is_inactive_when_stuck = false,
+    is_active = ai_common.npc_use_held_item_range_active,
+    label = ai_common.npc_use_held_item_range_label
+}
+
 return {
     Entity_AI:new({
         id = "jungle_sister",
@@ -70,6 +81,7 @@ return {
             DIALOG_JUNGLE_RANGE,
             DIALOG_OLMEC_RANGE,
             DETECT_BOMB_RANGE,
+            USE_HELD_ITEM_RANGE,
             { -- Dialog (tide pool)
                 shape = geometry.create_box_shape(-5, -1.5, 5, 1.5),
                 is_visible = function(ent)
@@ -93,6 +105,7 @@ return {
             DIALOG_JUNGLE_RANGE,
             DIALOG_OLMEC_RANGE,
             DETECT_BOMB_RANGE,
+            USE_HELD_ITEM_RANGE,
             { -- Dialog (neo babylon)
                 shape = geometry.create_circle_shape(2),
                 post_transform_shape = function(ent, ctx, shape)
@@ -120,6 +133,7 @@ return {
             DIALOG_JUNGLE_RANGE,
             DIALOG_OLMEC_RANGE,
             DETECT_BOMB_RANGE,
+            USE_HELD_ITEM_RANGE,
             { -- Dialog (ice caves)
                 shape = geometry.create_circle_shape(2),
                 post_transform_shape = function(ent, ctx, shape)

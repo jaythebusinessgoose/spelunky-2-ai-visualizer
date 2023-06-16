@@ -1,6 +1,4 @@
--- TODO: Rope/ladder climbing
--- TODO: Bomb aggro
--- TODO: Range with other weapons
+-- TODO: Finish NPC ranges
 -- TODO: He won't shoot if Tusk is in the way. How does that check work?
 
 local ai_common = require("ai/common")
@@ -23,17 +21,13 @@ return Entity_AI:new({
             is_inactive_when_stuck = false,
             label = "Tusk idol aggro"
         },
-        { -- Shoot
+        { -- Use held item
             shape = geometry.create_box_shape(0, -1, 6, 1),
             flip_with_ent = true,
-            is_visible = function(ent)
-                return ent.move_state == 6
-            end,
+            is_visible = ai_common.npc_use_held_item_range_visible,
             is_inactive_when_stuck = false,
-            is_active = function(ent)
-                return ai_common.can_shoot_held_weapon(ent)
-            end,
-            label = "Shoot"
+            is_active = ai_common.npc_use_held_item_range_active,
+            label = ai_common.npc_use_held_item_range_label
         }
     }
 })

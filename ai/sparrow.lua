@@ -1,4 +1,4 @@
--- TODO: NPC attack ranges
+-- TODO: Finish NPC ranges
 -- TODO: move_state affects willingness to show dialogs.
 
 local ai_common = require("ai/common")
@@ -11,6 +11,16 @@ return Entity_AI:new({
         ai_common.create_chaser_turn_range(ai_common.MOVE_STATE.ATTACKING, "target_in_sight_timer"),
         ai_common.create_chaser_postpone_turn_range(ai_common.MOVE_STATE.ATTACKING, "target_in_sight_timer"),
         ai_common.create_chaser_no_jump_range(ai_common.MOVE_STATE.ATTACKING),
+        { -- Use held item
+            shape = geometry.create_box_shape(0, -0.18, 10, 0.18),
+            flip_with_ent = true,
+            line_of_sight_checks = 10,
+            line_of_sight_extra_length = 2,
+            is_visible = ai_common.npc_use_held_item_range_visible,
+            is_inactive_when_stuck = false,
+            is_active = ai_common.npc_use_held_item_range_active,
+            label = ai_common.npc_use_held_item_range_label
+        },
         { -- Dialog
             shape = geometry.create_circle_shape(2.5),
             post_transform_shape = function(ent, ctx, shape)

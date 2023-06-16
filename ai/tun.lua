@@ -1,5 +1,4 @@
--- TODO: Climbing
--- TODO: Bomb aggro
+-- TODO: Finish NPC ranges
 
 local ai_common = require("ai/common")
 
@@ -28,18 +27,15 @@ return Entity_AI:new({
             is_inactive_when_stuck = false,
             label = "Aggro"
         },
-        { -- Shoot
-            -- TODO: Needs LoS to shoot? Jungle sisters sometimes shoot when close to a 1-thick wall.
+        { -- Use held item
             shape = geometry.create_box_shape(0, -0.2, 10, 0.2),
             flip_with_ent = true,
-            is_visible = function(ent)
-                return ent.move_state == ai_common.MOVE_STATE.ATTACKING
-            end,
+            line_of_sight_checks = 10,
+            line_of_sight_extra_length = 1,
+            is_visible = ai_common.npc_use_held_item_range_visible,
             is_inactive_when_stuck = false,
-            is_active = function(ent)
-                return ai_common.can_shoot_held_weapon(ent)
-            end,
-            label = "Shoot"
+            is_active = ai_common.npc_use_held_item_range_active,
+            label = ai_common.npc_use_held_item_range_label
         }
     }
 })

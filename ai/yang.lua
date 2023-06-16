@@ -1,4 +1,4 @@
--- TODO: NPC attack ranges
+-- TODO: Finish NPC ranges
 -- TODO: Dead turkey aggro
 -- TODO: Does this move_state stuff matter? Didn't really check it for other NPCs.
 
@@ -53,6 +53,16 @@ return Entity_AI:new({
             end,
             label = "Detect bomb",
             label_position = LABEL_POSITION.TOP
+        },
+        { -- Use held item
+            shape = geometry.create_box_shape(0, -0.2, 10, 0.2),
+            flip_with_ent = true,
+            line_of_sight_checks = 10,
+            line_of_sight_extra_length = 1,
+            is_visible = ai_common.npc_use_held_item_range_visible,
+            is_inactive_when_stuck = false,
+            is_active = ai_common.npc_use_held_item_range_active,
+            label = ai_common.npc_use_held_item_range_label
         }
     }
 })

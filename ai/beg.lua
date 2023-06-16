@@ -1,5 +1,5 @@
--- TODO: NPC attack ranges, aggro
--- TODO: Can't pick up weapons, but can he shoot them if equipped?
+-- TODO: Finish NPC ranges
+-- Beg does not pick up any items and will not use them even if forced to hold them.
 
 local ai_common = require("ai/common")
 

@@ -228,21 +228,23 @@ local function is_point_solid(x, y, layer)
     return false
 end
 
-local function clip_line_of_sight(process_ctx, shape, line_of_sight_checks)
-    -- Line-of-sight checks only occur in the direction the entity is facing. There are no entities with two-way line-of-sight checks.
+local function clip_line_of_sight(process_ctx, shape, max_checks, extra_length)
     local facing_mult = process_ctx.is_facing_left and -1 or 1
-    local check_x = 1
-    while check_x <= line_of_sight_checks do
-        if is_point_solid(process_ctx.ent_x + (facing_mult * check_x), process_ctx.ent_y, process_ctx.ent_layer) then
+    local check_count = 1
+    while true do
+        if is_point_solid(process_ctx.ent_x + (facing_mult * check_count), process_ctx.ent_y, process_ctx.ent_layer) then
             break
+        elseif check_count >= max_checks then
+            return
         else
-            check_x = check_x + 1
+            check_count = check_count + 1
         end
     end
+    local clip_offset = check_count - 1 + extra_length
     if process_ctx.is_facing_left then
-        shape:clip_left(process_ctx.ent_x - check_x + 0.5)
+        shape:clip_left(process_ctx.ent_x - clip_offset)
     else
-        shape:clip_right(process_ctx.ent_x + check_x - 0.5)
+        shape:clip_right(process_ctx.ent_x + clip_offset)
     end
 end
 
@@ -371,7 +373,7 @@ local function process_tracked_entity(id)
                     shape:translate(x, y)
 
                     if range.flip_with_ent and range.line_of_sight_checks then
-                        clip_line_of_sight(process_ctx, shape, range.line_of_sight_checks)
+                        clip_line_of_sight(process_ctx, shape, range.line_of_sight_checks, range.line_of_sight_extra_length or 0.5)
                     end
 
                     if range.post_transform_shape then
