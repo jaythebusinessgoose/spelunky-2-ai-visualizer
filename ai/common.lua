@@ -88,6 +88,33 @@ function module.get_room_bounds(x, y)
     return left, top - CONST.ROOM_HEIGHT, left + CONST.ROOM_WIDTH, top
 end
 
+-- Checks whether there is a solid grid entity within the grid tile at the given point, using the same behavior as the game engine. Notably, this will return true even if the grid entity's hitbox is smaller than the grid tile and does not overlap the point itself.
+function module.is_point_solid_grid_entity(x, y, layer)
+    local ent = get_entity(get_grid_entity_at(math.floor(x + 0.5), math.floor(y + 0.5), layer))
+    return ent ~= nil and test_flag(ent.flags, ENT_FLAG.SOLID)
+end
+
+-- Checks whether there is a solid active floor entity at the given point, using the same behavior as the game engine. Hitbox edges and corners count as overlap with the point.
+function module.is_point_solid_active_floor(x, y, layer)
+    -- Spelunky's point overlap check includes hitbox edges and corners, but Overlunky's hitbox overlap check does not. To work around this, add some padding to ensure that the Overlunky function returns all potentially overlapping entities. Then do another check on each solid entity to see if any of them actually overlap the point, including edges and corners. Spelunky doesn't have any padding of its own for this check.
+    local ids = get_entities_overlapping_hitbox(0, MASK.ACTIVEFLOOR,
+        AABB:new(x - 0.0001, y + 0.0001, x + 0.0001, y - 0.0001), layer)
+    for _, id in ipairs(ids) do
+        if test_flag(get_entity(id).flags, ENT_FLAG.SOLID) then
+            local hitbox = get_hitbox(id)
+            if hitbox.left <= x and x <= hitbox.right and hitbox.bottom <= y and y <= hitbox.top then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+-- Checks if either `is_point_solid_grid_entity` or `is_point_solid_active_floor` are true at the given point. Many entities use both of these checks together.
+function module.is_point_solid_grid_entity_or_active_floor(x, y, layer)
+    return module.is_point_solid_grid_entity(x, y, layer) or module.is_point_solid_active_floor(x, y, layer)
+end
+
 -- Returns whether an NPC entity is holding a usable item and is in the attacking AI state.
 function module.npc_use_held_item_range_visible(ent)
     if ent.move_state == module.MOVE_STATE.ATTACKING then

@@ -213,26 +213,13 @@ local function should_process_entities(screen)
     return screen == SCREEN.CAMP or screen == SCREEN.LEVEL or screen == SCREEN.DEATH
 end
 
-local function is_point_solid(x, y, layer)
-    -- Spelunky's point overlap check includes hitbox edges and corners, but Overlunky's hitbox overlap check does not. To work around this, add some padding to ensure that the Overlunky function returns all potentially overlapping entities. Then do another check on each solid entity to see if any of them actually overlap the point, including edges and corners. Spelunky doesn't seem to have any padding of its own for this check.
-    local ids = get_entities_overlapping_hitbox(0, MASK.FLOOR | MASK.ACTIVEFLOOR,
-        AABB:new(x - 0.0001, y + 0.0001, x + 0.0001, y - 0.0001), layer)
-    for _, id in ipairs(ids) do
-        if test_flag(get_entity(id).flags, ENT_FLAG.SOLID) then
-            local hitbox = get_hitbox(id)
-            if hitbox.left <= x and x <= hitbox.right and hitbox.bottom <= y and y <= hitbox.top then
-                return true
-            end
-        end
-    end
-    return false
-end
-
 local function clip_line_of_sight(process_ctx, shape, max_checks, extra_length)
     local facing_mult = process_ctx.is_facing_left and -1 or 1
     local check_count = 1
     while true do
-        if is_point_solid(process_ctx.ent_x + (facing_mult * check_count), process_ctx.ent_y, process_ctx.ent_layer) then
+        if ai_common.is_point_solid_grid_entity_or_active_floor(
+            process_ctx.ent_x + (facing_mult * check_count), process_ctx.ent_y, process_ctx.ent_layer)
+        then
             break
         elseif check_count >= max_checks then
             return
