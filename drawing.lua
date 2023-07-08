@@ -1,5 +1,7 @@
 local module = {}
 
+--------------------------------------------------------------------------------
+
 module.Draw_Item = {}
 module.Draw_Item.__index = module.Draw_Item
 
@@ -24,19 +26,6 @@ function module.Draw_Item:new(o)
     o = o or {}
     setmetatable(o, self)
     return o
-end
-
--- TODO: This would be easier to use as a class that I configure once and then query for specific positions.
-local function get_text_position(origin_x, origin_y, pivot_x, pivot_y, row, size, text, get_center)
-    local text_width, text_height = draw_text_size(size, text)
-    -- TODO: text_height is negative for some reason. Maybe because it draws downward from its origin? Does the math simplify if I leave it negative?
-    text_height = -text_height
-    -- Math for X and Y differs because screen coordinates increase from bottom-left to top-right, but the text drawing origin is its top-left corner.
-    if get_center then
-        return origin_x - ((pivot_x - 0.5) * text_width), origin_y + ((0.5 + row - pivot_y) * text_height), text_width, text_height
-    else
-        return origin_x - (pivot_x * text_width), origin_y + ((1 + row - pivot_y) * text_height), text_width, text_height
-    end
 end
 
 function module.Draw_Item:draw(ctx)
@@ -81,26 +70,17 @@ function module.Draw_Item:draw(ctx)
             local label_origin_x, label_origin_y = screen_position(
                 ((1 - self.label_position.anchor.x) * self.shape.bounds.left) + (self.label_position.anchor.x * self.shape.bounds.right),
                 ((1 - self.label_position.anchor.y) * self.shape.bounds.bottom) + (self.label_position.anchor.y * self.shape.bounds.top))
-            local text_x, text_y = get_text_position(
-                label_origin_x, label_origin_y,
-                self.label_position.pivot.x, self.label_position.pivot.y,
-                0, self.label_size, self.label)
+            local label_draw_helper = module.Text_Draw_Helper:new(label_origin_x, label_origin_y,
+                self.label_position.pivot.x, self.label_position.pivot.y, self.label_size)
+            local text_x, text_y = label_draw_helper:get_text_position(self.label, self.timer and 0.5 or 0)
             ctx:draw_text(text_x, text_y, self.label_size, self.label, self.ucolors.text)
             if self.timer then
-                local bar_x, bar_y, _, bar_height = get_text_position(
-                    label_origin_x, label_origin_y,
-                    self.label_position.pivot.x, self.label_position.pivot.y,
-                    -1, self.label_size, "", true)
-                local bar_left, bar_bottom, bar_right, bar_top =
-                    bar_x - (1.5 * bar_height), bar_y - (bar_height / 2), bar_x + (1.5 * bar_height), bar_y + (bar_height / 2)
+                local bar_left, bar_bottom, bar_right, bar_top = label_draw_helper:get_text_bounds("0000/0000", -0.5)
                 ctx:draw_rect(bar_left, bar_top, bar_right, bar_bottom, 1, 0, self.ucolors.line)
                 local bar_fill_right = bar_left + ((bar_right - bar_left) * self.timer.value / self.timer.max_value)
                 ctx:draw_rect_filled(bar_left, bar_top, bar_fill_right, bar_bottom, 0, self.ucolors.fill)
                 local timer_text = self.timer.value.."/"..self.timer.max_value
-                local timer_text_x, timer_text_y = get_text_position(
-                    label_origin_x, label_origin_y,
-                    self.label_position.pivot.x, self.label_position.pivot.y,
-                    -1, self.label_size, timer_text)
+                local timer_text_x, timer_text_y = label_draw_helper:get_text_position(timer_text, -0.5)
                 ctx:draw_text(timer_text_x, timer_text_y, self.label_size, timer_text, self.ucolors.text)
             end
         end
@@ -116,6 +96,8 @@ function module.Draw_Item.flip_label_position_horizontal(label_position)
         return label_position
     end
 end
+
+--------------------------------------------------------------------------------
 
 local LINE_COLOR_ALPHA = 0.5
 local FILL_COLOR_ALPHA = 0.125
@@ -156,6 +138,40 @@ function module.Draw_Color:get_variant(index)
     index = ((index - 1) % #self.ucolors) + 1
     return self.ucolors[index]
 end
+
+--------------------------------------------------------------------------------
+
+module.Text_Draw_Helper = {}
+module.Text_Draw_Helper.__index = module.Text_Draw_Helper
+
+function module.Text_Draw_Helper:new(origin_x, origin_y, pivot_x, pivot_y, text_size)
+    local o = {
+        origin_x = origin_x,
+        origin_y = origin_y,
+        pivot_x = pivot_x,
+        pivot_y = pivot_y,
+        text_size = text_size
+    }
+    setmetatable(o, self)
+    return o
+end
+
+-- Returns the screen coordinates to provide to the text drawing function for the given text.
+function module.Text_Draw_Helper:get_text_position(text, row)
+    local text_width, text_height = draw_text_size(self.text_size, text)
+    -- Math for X and Y differs because screen coordinates increase from bottom-left to top-right, but the text drawing origin is its top-left corner and the text height is negative.
+    return self.origin_x - (self.pivot_x * text_width), self.origin_y - ((1 + row - self.pivot_y) * text_height)
+end
+
+-- Returns the bounds of the given text in screen coordinates, in order of left, bottom, right, and top.
+function module.Text_Draw_Helper:get_text_bounds(text, row)
+    local text_width, text_height = draw_text_size(self.text_size, text)
+    -- Math for X and Y differs because screen coordinates increase from bottom-left to top-right, but the text drawing origin is its top-left corner and the text height is negative.
+    return self.origin_x - (self.pivot_x * text_width), self.origin_y + ((self.pivot_y - row) * text_height),
+        self.origin_x + ((1 - self.pivot_x) * text_width), self.origin_y - ((1 + row - self.pivot_y) * text_height)
+end
+
+--------------------------------------------------------------------------------
 
 local POINT_MARK_UCOLOR = Color:new(0, 0.5, 1, 0.75):get_ucolor()
 -- Width of the square enclosing the point mark, in screen coordinates.
