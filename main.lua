@@ -116,12 +116,15 @@ local HURTBOX_COLOR = drawing.Draw_Color:new({
     Color:new(1, 0.5, 0.5, 1),
     Color:new(0.875, 0.625, 0.5, 1)
 })
+local SOLID_CHECK_COLOR = drawing.Draw_Color:new({
+    Color:new(1, 0, 0.5, 1)
+})
 local MISC_BOX_COLOR = drawing.Draw_Color:new({
     Color:new(1, 0.875, 0.25, 1),
     Color:new(0.875, 1, 0.25, 1)
 })
 local TARGET_COLOR = drawing.Draw_Color:new({
-    Color:new(1, 0.5, 0.0, 1)
+    Color:new(1, 0.5, 0, 1)
 })
 
 local default_options = {
@@ -325,6 +328,8 @@ local function process_tracked_entity(id)
                 elseif range.type == Entity_AI.RANGE_TYPE.HURTBOX then
                     -- TODO: Make it more obvious that this is a hitbox overlap check. It's difficult to understand with just a color.
                     draw_color = HURTBOX_COLOR
+                elseif range.type == Entity_AI.RANGE_TYPE.SOLID_CHECK then
+                    draw_color = SOLID_CHECK_COLOR
                 end
 
                 local is_inactive_when_stuck = range.is_inactive_when_stuck == nil or range.is_inactive_when_stuck

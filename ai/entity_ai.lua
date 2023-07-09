@@ -1,5 +1,5 @@
 local Entity_AI = {
-    RANGE_TYPE = { MISC = 1, ORIGIN_CHECK = 2, HITBOX_OVERLAP = 3, HURTBOX = 4 },
+    RANGE_TYPE = { MISC = 1, ORIGIN_CHECK = 2, HITBOX_OVERLAP = 3, HURTBOX = 4, SOLID_CHECK = 5 },
     is_dead = function(ent)
         return ent.health == 0
     end,

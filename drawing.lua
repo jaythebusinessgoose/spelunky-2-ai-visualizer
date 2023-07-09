@@ -69,6 +69,11 @@ function module.Draw_Item:draw(ctx)
                 ctx:draw_line(x1, y1, x2, y2, 1, self.ucolors.line)
             end
         end
+        if self.shape.points then
+            for _, point in ipairs(self.shape.points) do
+                module.draw_point_mark(ctx, point.x, point.y, 0.75, self.ucolors.line)
+            end
+        end
         if self.label and self.shape.bounds then
             local label_origin_x, label_origin_y = screen_position(
                 ((1.0 - self.label_position.anchor.x) * self.shape.bounds.left) + (self.label_position.anchor.x * self.shape.bounds.right),
@@ -184,14 +189,16 @@ local POINT_MARK_W = 0.015
 -- Height of the square enclosing the point mark, in screen coordinates.
 local POINT_MARK_H
 
-function module.draw_point_mark(ctx, x, y)
+function module.draw_point_mark(ctx, x, y, size, ucolor)
+    size = size or 1
+    ucolor = ucolor or POINT_MARK_UCOLOR
     local screen_x, screen_y = screen_position(x, y)
-    local left = screen_x - (POINT_MARK_W / 2)
-    local right = screen_x + (POINT_MARK_W / 2)
-    local bottom = screen_y - (POINT_MARK_H / 2)
-    local top = screen_y + (POINT_MARK_H / 2)
-    ctx:draw_line(left, screen_y, right, screen_y, 2, POINT_MARK_UCOLOR)
-    ctx:draw_line(screen_x, bottom, screen_x, top, 2, POINT_MARK_UCOLOR)
+    local left = screen_x - (size * POINT_MARK_W / 2)
+    local right = screen_x + (size * POINT_MARK_W / 2)
+    local bottom = screen_y - (size * POINT_MARK_H / 2)
+    local top = screen_y + (size * POINT_MARK_H / 2)
+    ctx:draw_line(left, screen_y, right, screen_y, 2, ucolor)
+    ctx:draw_line(screen_x, bottom, screen_x, top, 2, ucolor)
 end
 
 -- Compute all variables that depend on the screen size. This should be called once before every drawing frame.

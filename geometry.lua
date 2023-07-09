@@ -194,6 +194,12 @@ function Shape:clone()
     if self.bounds then
         clone.bounds = AABB:new(self.bounds)
     end
+    if self.points then
+        clone.points = {}
+        for i, point in ipairs(self.points) do
+            clone.points[i] = Vec2:new(point)
+        end
+    end
     if self.lines then
         clone.lines = {}
         for i, line in ipairs(self.lines) do
@@ -224,6 +230,12 @@ function Shape:translate(x, y)
         self.bounds.bottom = self.bounds.bottom + y
         self.bounds.right = self.bounds.right + x
         self.bounds.top = self.bounds.top + y
+    end
+    if self.points then
+        for _, point in ipairs(self.points) do
+            point.x = point.x + x
+            point.y = point.y + y
+        end
     end
     if self.lines then
         for _, line in ipairs(self.lines) do
@@ -259,6 +271,11 @@ function Shape:flip_horizontal()
     if self.bounds then
         self.bounds.left, self.bounds.right = -self.bounds.right, -self.bounds.left
     end
+    if self.points then
+        for _, point in ipairs(self.points) do
+            point.x = -point.x
+        end
+    end
     if self.lines then
         for _, line in ipairs(self.lines) do
             line.v1.x = -line.v1.x
@@ -289,6 +306,15 @@ end
 
 -- Clip the shape along the given clip line, keeping the left portion relative to the clip line.
 function Shape:_clip(clip_line)
+    if self.points then
+        local new_points = {}
+        for _, point in ipairs(self.points) do
+            if clip_line:get_point_side(point) <= 0 then
+                table.insert(new_points, point)
+            end
+        end
+        self.points = new_points
+    end
     if self.lines then
         local new_lines = {}
         for _, line in ipairs(self.lines) do
@@ -447,6 +473,18 @@ local CIRCLE_MAX_SLICE_ARC_LENGTH = 0.5
 local function calculate_circle_slice_count(r, divisibility)
     local slice_count = divisibility * math.ceil(math.max(CIRCLE_MIN_SLICE_COUNT, 2 * math.pi * r / CIRCLE_MAX_SLICE_ARC_LENGTH) / divisibility)
     return slice_count, 2 * math.pi / slice_count
+end
+
+function module.create_point_set_shape(...)
+    local shape = Shape:new()
+
+    shape.points = {}
+    for i, point in ipairs({ ... }) do
+        shape.points[i] = Vec2:new(point)
+        shape:_update_bounds(point)
+    end
+
+    return shape
 end
 
 function module.create_line_shape(v1, v2)
