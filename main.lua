@@ -475,6 +475,7 @@ end
 local function on_draw_gui(ctx)
     ctx:draw_layer(DRAW_LAYER.BACKGROUND)
     if should_process_entities(state.screen) then
+        drawing.compute_screen_vars()
         for _, tracked_ent_data in pairs(tracked_ents) do
             if tracked_ent_data.draw_items then
                 for _, draw_item in ipairs(tracked_ent_data.draw_items) do

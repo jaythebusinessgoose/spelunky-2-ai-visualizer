@@ -1,22 +1,25 @@
 local module = {}
 
+-- Screen width divided by height.
+local ASPECT_RATIO
+
 --------------------------------------------------------------------------------
 
 module.Draw_Item = {}
 module.Draw_Item.__index = module.Draw_Item
 
--- TODO: Since the pivot coordinates scale with the label, the slight offsets I added to keep the label away from the edge of the shape will differ depending on the label's size. I need to provide these offsets in screen coordinates.
 --[[
-The coordinate system for the pivot and anchor is based on the bounding box of the label and parent shape respectively. X is horizontal, Y is vertical, the bottom-left corner is always (0, 0), and the top-right corner is always (1, 1).
+The coordinate system for `pivot` and `anchor` is based on the bounding box of the label and parent shape respectively. X is horizontal, Y is vertical, the bottom-left corner is always (0, 0), and the top-right corner is always (1, 1).
 pivot: The point on the label acting as its origin.
 anchor: The point on the parent shape where the label's pivot will be placed.
+anchor_screen_offset: Screen coordinate offset to add to the anchor, in screen width units.
 ]]
 module.Draw_Item.LABEL_POSITION = {
-    CENTER = { pivot = Vec2:new(0.5, 0.5), anchor = Vec2:new(0.5, 0.5) },
-    LEFT = { pivot = Vec2:new(-0.05, 0.5), anchor = Vec2:new(0.0, 0.5) },
-    RIGHT = { pivot = Vec2:new(1.05, 0.5), anchor = Vec2:new(1.0, 0.5) },
-    BOTTOM = { pivot = Vec2:new(0.5, -0.1), anchor = Vec2:new(0.5, 0.0) },
-    TOP = { pivot = Vec2:new(0.5, 1.1), anchor = Vec2:new(0.5, 1.0) }
+    CENTER = { pivot = Vec2:new(0.5, 0.5), anchor = Vec2:new(0.5, 0.5), anchor_screen_offset = Vec2:new(0.0, 0.0) },
+    LEFT = { pivot = Vec2:new(0.0, 0.5), anchor = Vec2:new(0.0, 0.5), anchor_screen_offset = Vec2:new(0.01, 0.0) },
+    RIGHT = { pivot = Vec2:new(1.0, 0.5), anchor = Vec2:new(1.0, 0.5), anchor_screen_offset = Vec2:new(-0.01, 0.0) },
+    BOTTOM = { pivot = Vec2:new(0.5, 0.0), anchor = Vec2:new(0.5, 0.0), anchor_screen_offset = Vec2:new(0.0, 0.01) },
+    TOP = { pivot = Vec2:new(0.5, 1.0), anchor = Vec2:new(0.5, 1.0), anchor_screen_offset = Vec2:new(0.0, -0.01) }
 }
 
 module.Draw_Item.label_size = 24
@@ -68,11 +71,13 @@ function module.Draw_Item:draw(ctx)
         end
         if self.label and self.shape.bounds then
             local label_origin_x, label_origin_y = screen_position(
-                ((1 - self.label_position.anchor.x) * self.shape.bounds.left) + (self.label_position.anchor.x * self.shape.bounds.right),
-                ((1 - self.label_position.anchor.y) * self.shape.bounds.bottom) + (self.label_position.anchor.y * self.shape.bounds.top))
+                ((1.0 - self.label_position.anchor.x) * self.shape.bounds.left) + (self.label_position.anchor.x * self.shape.bounds.right),
+                ((1.0 - self.label_position.anchor.y) * self.shape.bounds.bottom) + (self.label_position.anchor.y * self.shape.bounds.top))
+            label_origin_x = label_origin_x + self.label_position.anchor_screen_offset.x
+            label_origin_y = label_origin_y + (self.label_position.anchor_screen_offset.y * ASPECT_RATIO)
             local label_draw_helper = module.Text_Draw_Helper:new(label_origin_x, label_origin_y,
                 self.label_position.pivot.x, self.label_position.pivot.y, self.label_size)
-            local text_x, text_y = label_draw_helper:get_text_position(self.label, self.timer and 0.5 or 0)
+            local text_x, text_y = label_draw_helper:get_text_position(self.label, self.timer and 0.5 or 0.0)
             ctx:draw_text(text_x, text_y, self.label_size, self.label, self.ucolors.text)
             if self.timer then
                 local bar_left, bar_bottom, bar_right, bar_top = label_draw_helper:get_text_bounds("0000/0000", -0.5)
@@ -176,20 +181,29 @@ end
 local POINT_MARK_UCOLOR = Color:new(0, 0.5, 1, 0.75):get_ucolor()
 -- Width of the square enclosing the point mark, in screen coordinates.
 local POINT_MARK_W = 0.015
+-- Height of the square enclosing the point mark, in screen coordinates.
+local POINT_MARK_H
 
 function module.draw_point_mark(ctx, x, y)
-    local window_w, window_h = get_window_size()
-    if window_h == 0 then
-        return
-    end
-    local point_mark_h = POINT_MARK_W * window_w / window_h
     local screen_x, screen_y = screen_position(x, y)
     local left = screen_x - (POINT_MARK_W / 2)
     local right = screen_x + (POINT_MARK_W / 2)
-    local bottom = screen_y - (point_mark_h / 2)
-    local top = screen_y + (point_mark_h / 2)
+    local bottom = screen_y - (POINT_MARK_H / 2)
+    local top = screen_y + (POINT_MARK_H / 2)
     ctx:draw_line(left, screen_y, right, screen_y, 2, POINT_MARK_UCOLOR)
     ctx:draw_line(screen_x, bottom, screen_x, top, 2, POINT_MARK_UCOLOR)
+end
+
+-- Compute all variables that depend on the screen size. This should be called once before every drawing frame.
+function module.compute_screen_vars()
+    local window_w, window_h = get_window_size()
+    if window_h == 0 then
+        -- Use a sane fallback value in case window height is briefly zero.
+        ASPECT_RATIO = 1
+    else
+        ASPECT_RATIO = window_w / window_h
+    end
+    POINT_MARK_H = POINT_MARK_W * ASPECT_RATIO
 end
 
 return module
