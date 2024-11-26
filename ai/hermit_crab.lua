@@ -55,7 +55,6 @@ return Entity_AI:new({
             label = "No hide"
         },
         { -- Bubble (climbing)
-            -- TODO: Not 100% sure about -0.1, but it's pretty close.
             shape = geometry.create_box_shape(-3, -0.1, 3, 3),
             is_visible = function(ent)
                 return ent.state == CHAR_STATE.CLIMBING
