@@ -10,6 +10,9 @@ return Entity_AI:new({
             is_active = function(ent)
                 return ent.move_state == 0 or ent.move_state == 1
             end,
+            is_visible = function(ent)
+                return ent.move_state ~= 11
+            end,
             label = "Bubble"
         },
         { -- Claw
@@ -17,6 +20,9 @@ return Entity_AI:new({
             flip_with_ent = true,
             is_active = function(ent)
                 return ent.move_state == 0 or ent.move_state == 1
+            end,
+            is_visible = function(ent)
+                return ent.move_state ~= 11
             end,
             label = "Claw"
         },
@@ -26,7 +32,26 @@ return Entity_AI:new({
             is_active = function(ent)
                 return ent.move_state == 0 or ent.move_state == 1
             end,
+            is_visible = function(ent)
+                return ent.move_state ~= 11
+            end,
             label = "Turn"
+        },
+        { -- Claw Retract
+            shape = geometry.create_box_shape(-1000, -1000, 1000, -1.5),
+            is_visible = function(ent)
+                return ent.move_state == 11
+            end,
+            label = "Retract",
+            label_position = LABEL_POSITION.TOP
+        },
+        { -- Claw Retract
+            shape = geometry.create_box_shape(-1000, 1.5, 1000, 1000),
+            is_visible = function(ent)
+                return ent.move_state == 11
+            end,
+            label = "Retract",
+            label_position = LABEL_POSITION.BOTTOM
         }
     }
 })
