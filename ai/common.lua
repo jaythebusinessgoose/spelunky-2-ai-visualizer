@@ -173,6 +173,7 @@ function module.create_chaser_no_jump_range(attack_move_state)
         end,
         is_active = function(ent)
             -- TODO: Is this based on standing_on_uid or stand_counter?
+            -- ANSWER: Yes, it's based on standing_on_uid (+ the existence of that entity).
             return ent.standing_on_uid ~= -1
         end,
         label = "No jump"
