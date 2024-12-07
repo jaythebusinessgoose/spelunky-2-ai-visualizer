@@ -9,7 +9,7 @@ return Entity_AI:new({
             flip_with_ent = true,
             line_of_sight_checks = 3,
             is_visible = function(ent)
-                return not ent.in_stack
+                return not ent.in_stack and (ent.overlay == nil or ent.overlay.type.id ~= ENT_TYPE.MOUNT_MECH)
             end,
             is_active = function(ent)
                 -- TODO: attack_cooldown_timer is normally 0-60, but breaking an olmite stack can produce an olmite with a timer > 60 that never decrements. An olmite in this state can jump immediately and will fix its timer after landing.
