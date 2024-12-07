@@ -14,7 +14,7 @@ return Entity_AI:new({
             local rider = get_entity(ent.rider_uid)
             -- gun_cooldown also applies to punching.
             can_attack = (ent.state == CHAR_STATE.STANDING or ent.state == CHAR_STATE.FALLING or (ent.state == CHAR_STATE.DUCKING and ent.move_state == 0))
-                and ent.gun_cooldown == 0 and (rider.type.id == ENT_TYPE.MONS_ALIEN or rider.type.id == ENT_TYPE.MONS_OLMITE_NAKED)
+                and ent.gun_cooldown == 0 and (rider.type.id >= ENT_TYPE.MONS_PET_TUTORIAL and rider.type.id <= ENT_TYPE.MONS_CRITTERSLIME)
         end
         ctx.can_attack = can_attack
     end,
