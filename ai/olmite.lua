@@ -3,6 +3,10 @@ return Entity_AI:new({
     id = "olmite",
     name = "Olmite",
     ent_type = { ENT_TYPE.MONS_OLMITE_BODYARMORED, ENT_TYPE.MONS_OLMITE_HELMET, ENT_TYPE.MONS_OLMITE_NAKED },
+    preprocess = function(ent, ctx)
+        ctx.offsetx = ent.offsetx
+        ctx.hitboxx = ent.hitboxx
+    end,
     ranges = {
         { -- Jump
             shape = geometry.create_box_shape(0, -0.4, 3, 0.4),
@@ -27,6 +31,29 @@ return Entity_AI:new({
             end,
             label = "Stomp",
             label_position = LABEL_POSITION.TOP
+        },
+        { -- Run (corridor check)
+            shape = geometry.create_point_set_shape(Vec2:new(0, 1), Vec2:new(0, 1)),
+            -- TODO: Allow the shape to be a function that takes ent and context?
+            post_transform_shape = function(ent, ctx)
+                local shape = geometry.create_point_set_shape(Vec2:new(ctx.offsetx - ctx.hitboxx, 1), Vec2:new(ctx.offsetx + ctx.hitboxx, 1))
+                local x, y = get_position(ent.uid)
+                shape:translate(x, y)
+                return shape
+            end,
+            type = Entity_AI.RANGE_TYPE.SOLID_CHECK,
+            is_active = function(ent)
+                return ent.standing_on_uid ~= -1 and (ent.move_state == 0 or ent.move_state == 1 or ent.move_state == 9)
+            end,
+            label = function(ent)
+                if ent.move_state == 9 then
+                    return "Walk"
+                else
+                    return "Run"
+                end
+            end,
+            -- TODO: This hack puts the label above the points.
+            label_position = LABEL_POSITION.BOTTOM
         }
     }
 })
