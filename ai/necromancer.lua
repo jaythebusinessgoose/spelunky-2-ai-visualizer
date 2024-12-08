@@ -13,11 +13,26 @@ return Entity_AI:new({
                 -- Back layer necromancers can attack the front layer, but not vice-versa.
                 return ent.layer == LAYER.BACK and LAYER.BOTH or ent.layer
             end,
+            is_visible = function(ent)
+                -- TODO: He can acquire a target while falling and will immediately attack when touching the ground even if the target moves out of range.
+                return ent.move_state == 0 or ent.move_state == 1
+            end,
             is_active = function(ent)
                 -- TODO: He can acquire a target while falling and will immediately attack when touching the ground even if the target moves out of range.
-                return ent.state == CHAR_STATE.STANDING and (ent.move_state == 0 or ent.move_state == 1) and ent.resurrection_timer == 0
+                return ent.state == CHAR_STATE.STANDING and ent.resurrection_timer == 0
             end,
             label = "Attack"
+        },
+        { -- Resurrect
+            shape = geometry.create_box_shape(-8, -8, 8, 8),
+            layer = function(ent)
+                -- Back layer necromancers can attack the front layer, but not vice-versa.
+                return ent.layer == LAYER.BACK and LAYER.BOTH or ent.layer
+            end,
+            is_visible = function(ent)
+                return ent.move_state == 6
+            end,
+            label = "Resurrect"
         }
     }
 })
