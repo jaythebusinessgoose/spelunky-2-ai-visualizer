@@ -15,27 +15,24 @@ return Entity_AI:new({
         { -- Jump
             shape = geometry.create_circle_shape(5):clip_box(0, -2, nil, 2),
             flip_with_ent = true,
-            is_active = function(ent)
-                -- TODO
-                return true
+            is_visible = function(ent)
+                return ent.move_state == 0 or ent.move_state == 1
             end,
             label = "Jump"
         },
         { -- Turn
             shape = geometry.create_circle_shape(5):clip_box(nil, -2, 0, 2),
             flip_with_ent = true,
-            is_active = function(ent)
-                -- TODO
-                return true
+            is_visible = function(ent)
+                return ent.move_state == 0 or ent.move_state == 1
             end,
             label = "Turn"
         },
         { -- Roll
             shape = geometry.create_donut_shape(5, 12):clip_box(0, -2, nil, 2),
             flip_with_ent = true,
-            is_active = function(ent)
-                -- TODO
-                return true
+            is_visible = function(ent)
+                return ent.move_state == 0 or ent.move_state == 1
             end,
             label = "Roll"
         },
