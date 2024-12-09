@@ -38,6 +38,18 @@ return Entity_AI:new({
                 return true
             end,
             label = "Roll"
+        },
+        { -- Stomp
+            shape = geometry.create_box_shape(-1000, -1000, 0, 1000),
+            flip_with_ent = true,
+            is_visible = function(ent)
+                return ent.move_state == 2
+            end,
+            is_active = function(ent)
+                return ent.chased_target_uid ~= -1
+            end,
+            label = "Stomp",
+            label_position = LABEL_POSITION.RIGHT,
         }
     }
 })
