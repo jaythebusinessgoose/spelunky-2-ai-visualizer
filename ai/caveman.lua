@@ -49,7 +49,7 @@ return Entity_AI:new({
             shape = geometry.create_box_shape(0.5, -0.1, 1.5, 0.1),
             flip_with_ent = true,
             is_visible = function(ent)
-                return ent.move_state == 0 or ent.move_state == 1
+                return (ent.move_state == 0 or ent.move_state == 1) and not ai_common.is_mounted(ent)
             end,
             is_active = function(ent)
                 return ent.cooldown_timer == 0
