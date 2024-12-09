@@ -44,6 +44,17 @@ return Entity_AI:new({
                 return ent.move_state == 4 or ent.move_state == 6
             end,
             label = "Reaggro"
+        },
+        { -- Chat
+            shape = geometry.create_box_shape(0.5, -0.1, 1.5, 0.1),
+            flip_with_ent = true,
+            is_visible = function(ent)
+                return ent.move_state == 0 or ent.move_state == 1
+            end,
+            is_active = function(ent)
+                return ent.cooldown_timer == 0
+            end,
+            label = "Chat"
         }
     }
 })
