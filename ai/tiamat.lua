@@ -7,6 +7,7 @@ return Entity_AI:new({
     ranges = {
         { -- Shoot
             -- TODO: Is this shape based on Tiamat's position, or the level?
+            -- ANSWER: It's based on the position in the level (
             shape = geometry.create_box_shape(-11, -6, 9, 10),
             is_active = function(ent)
                 return ent.move_state == 0 and ent.attack_timer == 0
@@ -22,7 +23,9 @@ return Entity_AI:new({
         },
         { -- Yell hurtbox
             -- TODO: Yell only seems to do damage on its first frame within its entire hurtbox. The hurtbox stays active for a little while afterward, but only applies knockback.
+            -- ANSWER: The transition from move_state 2 to 6 does damage, then during move_state 6 it does knockback only.
             -- TODO: Haven't tested that hurtbox for paste bombs is the same as hurtbox for players.
+            -- ANSWER: Yes, it is the same.
             shape = geometry.create_box_shape(-4.4, -5.25, 4.6, 3.75),
             type = Entity_AI.RANGE_TYPE.HURTBOX,
             is_active = function(ent)
