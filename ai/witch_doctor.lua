@@ -49,9 +49,8 @@ return {
                 end,
                 label = "Chase",
             },
-            --[[ TODO: This isn't really a range and shouldn't be depicted as one.
             { -- Orbit
-                shape = geometry.create_circle_shape(1.3),
+                shape = geometry.create_donut_shape(1.3, 1.3),
                 translate_shape = function(ent)
                     if ent.witch_doctor_uid >= 0 then
                         local x, y = get_position(ent.witch_doctor_uid)
@@ -63,7 +62,8 @@ return {
                     return ent.color.a > 0 and ent.witch_doctor_uid >= 0
                 end,
                 label = "Orbit",
-            }]]
+                label_position = LABEL_POSITION.TOP,
+            }
         }
     })
 }
