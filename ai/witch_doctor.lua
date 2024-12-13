@@ -13,6 +13,7 @@ return {
                 line_of_sight_checks = 6,
                 is_active = function(ent)
                     -- TODO: When can the witch doctor can initiate another attack after just doing one? He can start another attack at some point during the finishing animation from the previous one.
+                    -- ANSWER?: It looks like it is always active, and will spawn a hint entity on its target if the target does not already have one.
                     return true
                 end,
                 label = "Attack"
