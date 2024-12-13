@@ -40,8 +40,11 @@ return {
                 -- The skull can move when partially transparent, but has no hurtbox unless it's fully opaque.
                 shape = geometry.create_circle_shape(4),
                 is_visible = function(ent)
-                    -- TODO: Is this actually how the game determines whether the skull is active?
-                    return ent.color.a > 0
+                    local witch = get_entity(ent.witch_doctor_uid)
+                    if witch ~= nil then
+                        return witch.stun_timer == 0 and witch.frozen_timer == 0 and not test_flag(witch.flags, ENT_FLAG.DEAD)
+                    end
+                    return false
                 end,
                 is_active = function(ent)
                     return ent.color.a >= 1
@@ -57,8 +60,13 @@ return {
                     end
                 end,
                 is_visible = function(ent)
-                    -- TODO: Is this actually how the game determines whether the skull is active? Does it care if the witch doctor exists?
-                    return ent.color.a > 0 and ent.witch_doctor_uid >= 0
+                    local witch = get_entity(ent.witch_doctor_uid)
+                    return witch ~= nil
+                end,
+                is_active = function(ent)
+                    local witch = get_entity(ent.witch_doctor_uid)
+                    if witch == nil then return false end
+                    return witch.stun_timer == 0 and witch.frozen_timer == 0 and not test_flag(witch.flags, ENT_FLAG.DEAD) and ent.move_state ~= 6
                 end,
                 label = "Orbit",
                 label_position = LABEL_POSITION.TOP,
