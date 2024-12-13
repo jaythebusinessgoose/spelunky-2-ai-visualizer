@@ -44,8 +44,7 @@ return {
                     return ent.color.a > 0
                 end,
                 is_active = function(ent)
-                    -- TODO: When does the skull get an active hurtbox?
-                    return true
+                    return ent.color.a >= 1
                 end,
                 label = "Chase",
             },
