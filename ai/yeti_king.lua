@@ -41,6 +41,19 @@ return Entity_AI:new({
             end,
             label = "Freeze hurtbox"
         },
+        { -- Active freeze hurtbox
+            -- This is a hitbox overlap check. It's 2 tiles in front of the yeti king's hitbox and its height matches the king's hitbox.
+            shape = function(ent)
+                local damage_range = math.min(1, ent.idle_counter / 15.0) * 2
+                return geometry.create_box_shape(ent.offsetx + ent.hitboxx, ent.offsety - ent.hitboxy, ent.offsetx + ent.hitboxx + damage_range, ent.offsety + ent.hitboxy)
+            end,
+            flip_with_ent = true,
+            type = Entity_AI.RANGE_TYPE.HURTBOX,
+            is_visible = function(ent)
+                return ent.state == CHAR_STATE.ATTACKING and ent.move_state == 11 and ent.current_animation.id == 0x26
+            end,
+            label = " "
+        },
         { -- Ice break hurtbox
             -- This is a hitbox overlap check. He can only break ice tiles that have empty space under them. Left is 1 tile in front of his hitbox, right is 7 tiles in front of his hitbox, bottom is the bottom of his hitbox, and top is 6 tiles above the top of his hitbox. Hitbox padding allows the ice floor below him to break. He cannot break thin ice tiles.
             shape = geometry.create_box_shape(1.525, -0.93, 7.525, 6.45),
