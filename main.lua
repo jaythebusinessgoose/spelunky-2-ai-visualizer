@@ -311,11 +311,19 @@ local function process_tracked_entity(id)
 
                 local shapes = {}
                 if range.shape then
-                    table.insert(shapes, range.shape:clone())
+                    if type(range.shape) == "function" then
+                        table.insert(shapes, range.shape(ent, process_ctx))
+                    else
+                        table.insert(shapes, range.shape:clone())
+                    end
                 end
                 if range.shapes then
                     for _, shape in ipairs(range.shapes) do
-                        table.insert(shapes, shape:clone())
+                        if type(shape) == "function" then
+                            table.insert(shapes, shape(ent, process_ctx))
+                        else
+                            table.insert(shapes, shape:clone())
+                        end
                     end
                 end
 
