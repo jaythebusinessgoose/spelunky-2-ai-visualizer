@@ -13,8 +13,11 @@ return Entity_AI:new({
             label_position = LABEL_POSITION.TOP
         },
         { -- Punch hurtbox
-            -- TODO: Same comments as yeti queen.
-            shape = geometry.create_box_shape(-0.525, 0.45, 0.525, 1.45),
+            -- Width is the width of the yeti king's hitbox, and the height is 1 tile tall from the top of his hitbox.
+            shape = function(ent)
+                local top = ent.offsety + ent.hitboxy
+                return geometry.create_box_shape(ent.offsetx - ent.hitboxx, top, ent.offsetx + ent.hitboxx, top + 1)
+            end,
             type = Entity_AI.RANGE_TYPE.HURTBOX,
             is_active = function(ent)
                 -- TODO: Same comments as yeti queen.
@@ -32,17 +35,17 @@ return Entity_AI:new({
         },
         { -- Freeze hurtbox
             -- This is a hitbox overlap check. It's 2 tiles in front of the yeti king's hitbox and its height matches the king's hitbox.
-            -- TODO: Shape starts at 0 width and gradually extends to 2 tiles during the attack?
-            shape = geometry.create_box_shape(0.525, -0.93, 2.525, 0.45),
+            shape = function(ent)
+                return geometry.create_box_shape(ent.offsetx + ent.hitboxx, ent.offsety - ent.hitboxy, ent.offsetx + ent.hitboxx + 2, ent.offsety + ent.hitboxy)
+            end,
             flip_with_ent = true,
             type = Entity_AI.RANGE_TYPE.HURTBOX,
             is_active = function(ent)
-                return ent.state == CHAR_STATE.ATTACKING and ent.move_state == 11
+                return false
             end,
             label = "Freeze hurtbox"
         },
         { -- Active freeze hurtbox
-            -- This is a hitbox overlap check. It's 2 tiles in front of the yeti king's hitbox and its height matches the king's hitbox.
             shape = function(ent)
                 local damage_range = math.min(1, ent.idle_counter / 15.0) * 2
                 return geometry.create_box_shape(ent.offsetx + ent.hitboxx, ent.offsety - ent.hitboxy, ent.offsetx + ent.hitboxx + damage_range, ent.offsety + ent.hitboxy)
@@ -56,7 +59,10 @@ return Entity_AI:new({
         },
         { -- Ice break hurtbox
             -- This is a hitbox overlap check. He can only break ice tiles that have empty space under them. Left is 1 tile in front of his hitbox, right is 7 tiles in front of his hitbox, bottom is the bottom of his hitbox, and top is 6 tiles above the top of his hitbox. Hitbox padding allows the ice floor below him to break. He cannot break thin ice tiles.
-            shape = geometry.create_box_shape(1.525, -0.93, 7.525, 6.45),
+            shape = function(ent)
+                local right = ent.offsetx + ent.hitboxx
+                return geometry.create_box_shape(right + 1, ent.offsety - ent.hitboxy, right + 7, ent.offsety + ent.hitboxy + 6)
+            end,
             flip_with_ent = true,
             type = Entity_AI.RANGE_TYPE.HURTBOX,
             is_active = function(ent)
