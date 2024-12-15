@@ -16,11 +16,15 @@ return Entity_AI:new({
             label_position = LABEL_POSITION.TOP
         },
         { -- Punch hurtbox
-            -- TODO: This seems to be a hitbox overlap check. Its width is the width of the yeti queen's hitbox, and the height is exactly tall enough to hit a player whose origin is within the punch trigger box. Not 100% certain about bottom edge.
-            shape = geometry.create_box_shape(-0.525, 0.45, 0.525, 1.45),
+            -- Width is the width of the yeti queen's hitbox, and the heights from the top of her hitbox to 1 tile above.
+            shape = function(ent)
+                local top = ent.offsety + ent.hitboxy
+                return geometry.create_box_shape(ent.offsetx - ent.hitboxx, top, ent.offsetx + ent.hitboxx, top + 1)
+            end,
             type = Entity_AI.RANGE_TYPE.HURTBOX,
             is_active = function(ent)
                 -- TODO: Only seems to deal damage on the first frame. How do I detect this?
+                -- ANSWER: Does it make sense to make it "active" during move_state 7 (the wind-up for the punch)?
                 return ent.move_state == 6
             end,
             label = "Punch hurtbox"
