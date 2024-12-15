@@ -33,13 +33,8 @@ return Entity_AI:new({
             label_position = LABEL_POSITION.TOP
         },
         { -- Run (corridor check)
-            shape = geometry.create_point_set_shape(Vec2:new(0, 1), Vec2:new(0, 1)),
-            -- TODO: Allow the shape to be a function that takes ent and context?
-            post_transform_shape = function(ent, ctx)
-                local shape = geometry.create_point_set_shape(Vec2:new(ctx.offsetx - ctx.hitboxx, 1), Vec2:new(ctx.offsetx + ctx.hitboxx, 1))
-                local x, y = get_position(ent.uid)
-                shape:translate(x, y)
-                return shape
+            shape = function(ent, ctx)
+                return geometry.create_point_set_shape(Vec2:new(ctx.offsetx - ctx.hitboxx, 1), Vec2:new(ctx.offsetx + ctx.hitboxx, 1))
             end,
             type = Entity_AI.RANGE_TYPE.SOLID_CHECK,
             is_active = function(ent)

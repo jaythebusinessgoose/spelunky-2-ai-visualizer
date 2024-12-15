@@ -46,13 +46,9 @@ return Entity_AI:new({
             label = "Emerge"
         },
         { -- Activate
-            shape = geometry.create_circle_shape(16),
-            post_transform_shape = function(ent, ctx)
+            shape = function(ent, ctx)
                 local radius = ctx.trapped and 8 or 16
-                local shape = geometry.create_circle_shape(radius)
-                local x, y = get_position(ent.uid)
-                shape:translate(x, y)
-                return shape
+                return geometry.create_circle_shape(radius)
             end,
             is_visible = function(ent)
                 return ent.move_state == 8 and ent.digging_state == 2
