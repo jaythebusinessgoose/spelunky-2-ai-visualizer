@@ -24,7 +24,6 @@ return Entity_AI:new({
             type = Entity_AI.RANGE_TYPE.HURTBOX,
             is_active = function(ent)
                 -- TODO: Only seems to deal damage on the first frame. How do I detect this?
-                -- ANSWER: Does it make sense to make it "active" during move_state 7 (the wind-up for the punch)?
                 return ent.move_state == 6
             end,
             label = "Punch hurtbox"
