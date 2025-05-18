@@ -53,7 +53,7 @@ return Entity_AI:new({
             is_visible = function(ent)
                 return ent.move_state == 8 and ent.digging_state == 2
             end,
-            label = "Active"
+            label = "Activate"
         }
     }
 })
