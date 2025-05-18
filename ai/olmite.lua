@@ -3,10 +3,6 @@ return Entity_AI:new({
     id = "olmite",
     name = "Olmite",
     ent_type = { ENT_TYPE.MONS_OLMITE_BODYARMORED, ENT_TYPE.MONS_OLMITE_HELMET, ENT_TYPE.MONS_OLMITE_NAKED },
-    preprocess = function(ent, ctx)
-        ctx.offsetx = ent.offsetx
-        ctx.hitboxx = ent.hitboxx
-    end,
     ranges = {
         { -- Jump
             shape = geometry.create_box_shape(0, -0.4, 3, 0.4),
@@ -34,7 +30,7 @@ return Entity_AI:new({
         },
         { -- Run (corridor check)
             shape = function(ent, ctx)
-                return geometry.create_point_set_shape(Vec2:new(ctx.offsetx - ctx.hitboxx, 1), Vec2:new(ctx.offsetx + ctx.hitboxx, 1))
+                return geometry.create_point_set_shape(Vec2:new(ent.offsetx - ent.hitboxx, 1), Vec2:new(ent.offsetx + ent.hitboxx, 1))
             end,
             type = Entity_AI.RANGE_TYPE.SOLID_CHECK,
             is_active = function(ent)
