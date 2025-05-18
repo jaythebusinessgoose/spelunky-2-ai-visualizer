@@ -10,10 +10,37 @@ return Entity_AI:new({
         local above = get_entities_at(0, MASK.ACTIVEFLOOR | MASK.FLOOR, entx, enty + 1, entlayer, 0.5)
         local left = get_entities_at(0, MASK.ACTIVEFLOOR | MASK.FLOOR, entx - 1, enty, entlayer, 0.5)
         local right = get_entities_at(0, MASK.ACTIVEFLOOR | MASK.FLOOR, entx + 1, enty, entlayer, 0.5)
+        local solid_floor_above = false
+        local solid_floor_left = false
+        local solid_floor_right = false
+        if above then
+            for _, floor in pairs(above) do
+                if test_flag(get_entity(floor).flags, ENT_FLAG.SOLID) then
+                    solid_floor_above = true
+                    break
+                end
+            end
+        end
+        if left then
+            for _, floor in pairs(left) do
+                if test_flag(get_entity(floor).flags, ENT_FLAG.SOLID) then
+                    solid_floor_left = true
+                    break
+                end
+            end
+        end
+        if right then
+            for _, floor in pairs(right) do
+                if test_flag(get_entity(floor).flags, ENT_FLAG.SOLID) then
+                    solid_floor_right = true
+                    break
+                end
+            end
+        end
 
-        ctx.trapped = #left ~= 0 and #right ~= 0
-        ctx.in_cubby_left_opening = #above ~= 0 and # right ~= 0 and #left == 0
-        ctx.in_cubby_right_opening = #above ~= 0 and # left ~= 0 and #right == 0
+        ctx.trapped = solid_floor_left and solid_floor_right
+        ctx.in_cubby_left_opening = solid_floor_above and solid_floor_right and (not solid_floor_left)
+        ctx.in_cubby_right_opening = solid_floor_above and solid_floor_left and (not solid_floor_right)
     end,
     ranges = {
         { -- Emerge
